@@ -1,0 +1,34 @@
+---
+title: "GoogleSearchTrendsR"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(gtrendsR)
+library(ggplot2)
+result <- gtrends(keyword = c("Machine Learning"), geo = "")
+head(result$interest_by_country)
+data_sorted<-result$interest_by_country[with(result$interest_by_country, order(hits,decreasing =TRUE)),]
+data_top<-head(data_sorted,10)
+ggplot(data_top, aes(x=location, y=hits)) + 
+  geom_bar(stat = "identity")
+  
+```
+```{r}
+library(dplyr)
+df<-result$interest_over_time
+data_moded<-df %>%
+mutate( year = format(date, "%Y")) %>%
+group_by( year) %>%
+summarise(hits = sum(hits))
+ggplot(data_moded, aes(x=year, y=hits,group = 1)) + 
+  geom_point()+
+  geom_line()
+```
+
